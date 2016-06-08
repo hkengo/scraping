@@ -37,19 +37,27 @@ class AirbnbCrawler
 	
 	def crawl_index(page_num)
 		puts "GET page: #{page_num}"
-		if page_num == 1
-			@session.visit("https://www.airbnb.jp/s?host_id=7509034&s_tag=S6Cl-Mfg")
-		elsif page_num >= 2
-			@session.visit("https://www.airbnb.jp/s?host_id=7509034&ss_id=b4u7xp61&page=#{page_num}&s_tag=S6Cl-Mfg")
-		end
-		@session.all('div > a.media-photo').map do |space_link|
-			space_link['href']
+		begin
+			if page_num == 1
+				@session.visit("https://www.airbnb.jp/s?host_id=7509034&s_tag=S6Cl-Mfg")
+			elsif page_num >= 2
+				@session.visit("https://www.airbnb.jp/s?host_id=7509034&ss_id=b4u7xp61&page=#{page_num}&s_tag=S6Cl-Mfg")
+			end
+			@session.all('div > a.media-photo').map do |space_link|
+				space_link['href']
+			end
+		rescue => e
+			p e.message
 		end
 	end
 	
 	def crawl_detail(page_uri)
 		puts "GET #{page_uri}"
-		@session.visit(page_uri)
+		begin
+			@session.visit(page_uri)
+		rescue => e
+			p e.message
+		end
 		page = Nokogiri::HTML.parse(@session.html)
 		name = page.search('h1.overflow').text
 		
